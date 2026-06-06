@@ -38,10 +38,10 @@ const kidColors = [
 ];
 
 const stemFacts = [
-  "Bé có biết khi trộn màu Đỏ với màu Vàng tinh nghịch, chiếc cốc phép thuật sẽ biến hóa ra màu Cam ấm áp như ánh mặt trời không?",
-  "Tranh dân gia Đông Hồ đặc trưng của Việt Nam sử dụng các màu chế tác từ cỏ cây tự nhiên, cực kỳ thân thiện với thiên nhiên đấy!",
-  "Chùa Một Cột mang kết cấu mô phỏng một đóa hoa sen mọc lên từ hồ nước, biểu tượng cho vẻ đẹp tinh khiết đậm nét Việt Nam.",
-  "Xanh da trời hòa vào sắc Vàng óng sẽ sinh ra màu Xanh lá của rừng xanh tươi mát. Phối màu thật diệu kỳ phải không nào!"
+  "Bé có biết Cá Voi Xanh là loài động vật lớn nhất từng sống trên Trái Đất, lớn hơn cả những loài khủng long khổng lồ ngày xưa không?",
+  "Cá Heo cực kỳ thông minh và có thể gọi nhau bằng những 'tiếng huýt' riêng biệt giống như tên gọi của con người vậy!",
+  "Tốc độ bơi tối đa của Rùa Biển có thể lên tới 35 km/h, giúp các bạn rùa dễ dàng vượt hàng ngàn cây số đại dương bao la!",
+  "Bạch Tuộc có tới 3 trái tim ấm áp và đặc biệt hơn cả là dòng máu của các bạn ấy lại mang sắc xanh lam vô cùng kỳ thú!"
 ];
 
 const initialSubmissions: StudentSubmission[] = [
@@ -49,27 +49,27 @@ const initialSubmissions: StudentSubmission[] = [
     id: "sub-1",
     name: "Nguyễn Lâm",
     className: "Lớp 3A",
-    artworkType: "Cá Vàng",
+    artworkType: "Cá Heo",
     timeAgo: "10 phút trước",
-    sampleImg: "fish",
+    sampleImg: "dolphin",
     analyzed: false,
   },
   {
     id: "sub-2",
     name: "Mai Hoa",
     className: "Lớp 3A",
-    artworkType: "Chim Bồ Câu",
+    artworkType: "Rùa Biển",
     timeAgo: "1 giờ trước",
-    sampleImg: "bird",
+    sampleImg: "turtle",
     analyzed: false,
   },
   {
     id: "sub-3",
     name: "Tuấn Hải",
     className: "Lớp 3B",
-    artworkType: "Vịnh Hạ Long",
+    artworkType: "Cá Voi Xanh",
     timeAgo: "3 giờ trước",
-    sampleImg: "halong",
+    sampleImg: "whale",
     analyzed: false,
   }
 ];
@@ -86,7 +86,7 @@ export default function App() {
 
   // Canvas drawing state
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>("fish");
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>("whale");
   const [brushColor, setBrushColor] = useState("#ef4444");
   const [brushSize, setBrushSize] = useState(8);
   const [isEraser, setIsEraser] = useState(false);
@@ -121,7 +121,7 @@ export default function App() {
   const [mixSuccess, setMixSuccess] = useState<boolean | null>(null);
   
   // Shadow recognition game States
-  const [shadowTarget, setShadowTarget] = useState<TemplateType>("fish");
+  const [shadowTarget, setShadowTarget] = useState<TemplateType>("whale");
   const [shadowFeedback, setShadowFeedback] = useState<string | null>(null);
   const [shadowScore, setShadowScore] = useState<number>(0);
 
@@ -133,7 +133,7 @@ export default function App() {
   const [aiEvaluation, setAiEvaluation] = useState("Vui lòng chọn hoặc nộp bài vẽ để Cô Điệp AI phân tích sư phạm!");
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [newStudentName, setNewStudentName] = useState("");
-  const [newStudentTemplate, setNewStudentTemplate] = useState<TemplateType>("fish");
+  const [newStudentTemplate, setNewStudentTemplate] = useState<TemplateType>("whale");
 
   // Modals
   const [showRewardModal, setShowRewardModal] = useState(false);
@@ -303,110 +303,187 @@ export default function App() {
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
-    if (template === "fish") {
+    if (template === "whale") {
       ctx.beginPath();
-      // Fish torso
-      ctx.moveTo(w * 0.15, h * 0.5);
-      ctx.quadraticCurveTo(w * 0.4, h * 0.15, w * 0.75, h * 0.5);
-      ctx.quadraticCurveTo(w * 0.4, h * 0.85, w * 0.15, h * 0.5);
-      // Tail
-      ctx.moveTo(w * 0.75, h * 0.5);
-      ctx.lineTo(w * 0.9, h * 0.3);
-      ctx.lineTo(w * 0.84, h * 0.5);
-      ctx.lineTo(w * 0.9, h * 0.7);
-      ctx.closePath();
-      // Eye
-      ctx.moveTo(w * 0.32, h * 0.44);
-      ctx.arc(w * 0.28, h * 0.44, 10, 0, Math.PI * 2);
-      // Fins
-      ctx.moveTo(w * 0.45, h * 0.3);
-      ctx.quadraticCurveTo(w * 0.55, h * 0.15, w * 0.6, h * 0.25);
-      ctx.moveTo(w * 0.48, h * 0.68);
-      ctx.quadraticCurveTo(w * 0.55, h * 0.8, w * 0.58, h * 0.73);
-      // Smile mouth
-      ctx.moveTo(w * 0.19, h * 0.53);
-      ctx.quadraticCurveTo(w * 0.22, h * 0.59, w * 0.25, h * 0.53);
-
+      // Blue Whale main body
+      ctx.moveTo(w * 0.15, h * 0.55);
+      ctx.bezierCurveTo(w * 0.25, h * 0.2, w * 0.7, h * 0.2, w * 0.75, h * 0.5);
+      // Tail fluke
+      ctx.lineTo(w * 0.9, h * 0.38);
+      ctx.lineTo(w * 0.88, h * 0.52);
+      ctx.lineTo(w * 0.9, h * 0.66);
+      ctx.lineTo(w * 0.75, h * 0.55);
+      // Underbelly
+      ctx.bezierCurveTo(w * 0.45, h * 0.8, w * 0.22, h * 0.75, w * 0.15, h * 0.55);
       ctx.stroke();
-    } else if (template === "bird") {
+
+      // Fountain spout
       ctx.beginPath();
+      ctx.moveTo(w * 0.48, h * 0.27);
+      ctx.quadraticCurveTo(w * 0.44, h * 0.1, w * 0.38, h * 0.12);
+      ctx.moveTo(w * 0.48, h * 0.27);
+      ctx.quadraticCurveTo(w * 0.52, h * 0.1, w * 0.58, h * 0.12);
+      ctx.stroke();
+
+      // Friendly large eye
+      ctx.beginPath();
+      ctx.arc(w * 0.28, h * 0.48, 8, 0, Math.PI * 2);
+      // Broad cute smile
+      ctx.moveTo(w * 0.2, h * 0.58);
+      ctx.quadraticCurveTo(w * 0.26, h * 0.65, w * 0.32, h * 0.58);
+      ctx.stroke();
+    } else if (template === "dolphin") {
+      ctx.beginPath();
+      // Dolphin sleek active body (jumping arc)
+      ctx.moveTo(w * 0.12, h * 0.6);
+      ctx.bezierCurveTo(w * 0.28, h * 0.18, w * 0.7, h * 0.25, w * 0.82, h * 0.5);
+      // Tail fork
+      ctx.lineTo(w * 0.92, h * 0.58);
+      ctx.lineTo(w * 0.84, h * 0.52);
+      ctx.lineTo(w * 0.9, h * 0.44);
+      // Belly back
+      ctx.quadraticCurveTo(w * 0.52, h * 0.48, w * 0.12, h * 0.6);
+      ctx.stroke();
+
+      // Fin on back
+      ctx.beginPath();
+      ctx.moveTo(w * 0.46, h * 0.27);
+      ctx.quadraticCurveTo(w * 0.52, h * 0.12, w * 0.58, h * 0.29);
+      ctx.stroke();
+
+      // Eye & Beak/Mouth detail
+      ctx.beginPath();
+      ctx.arc(w * 0.22, h * 0.44, 6, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(w * 0.12, h * 0.6);
+      ctx.lineTo(w * 0.06, h * 0.55);
+      ctx.lineTo(w * 0.14, h * 0.5);
+      ctx.stroke();
+    } else if (template === "goldfish") {
+      ctx.beginPath();
+      // Cute bubbly goldfish body
+      ctx.moveTo(w * 0.18, h * 0.5);
+      ctx.quadraticCurveTo(w * 0.42, h * 0.16, w * 0.68, h * 0.5);
+      ctx.quadraticCurveTo(w * 0.42, h * 0.84, w * 0.18, h * 0.5);
+      ctx.stroke();
+
+      // Big fan tail fins
+      ctx.beginPath();
+      ctx.moveTo(w * 0.68, h * 0.5);
+      ctx.bezierCurveTo(w * 0.86, h * 0.22, w * 0.92, h * 0.3, w * 0.88, h * 0.5);
+      ctx.bezierCurveTo(w * 0.92, h * 0.7, w * 0.86, h * 0.78, w * 0.68, h * 0.5);
+      ctx.stroke();
+
+      // Gills and big googly eye
+      ctx.beginPath();
+      ctx.arc(w * 0.32, h * 0.44, 11, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Pouty lips
+      ctx.beginPath();
+      ctx.arc(w * 0.14, h * 0.5, 6, -Math.PI / 2, Math.PI / 2);
+      ctx.stroke();
+    } else if (template === "shark") {
+      ctx.beginPath();
+      // Shark sleek dynamic contour
+      ctx.moveTo(w * 0.14, h * 0.52);
+      ctx.quadraticCurveTo(w * 0.4, h * 0.22, w * 0.74, h * 0.46);
+      // Large vertical tail fin
+      ctx.lineTo(w * 0.86, h * 0.26);
+      ctx.lineTo(w * 0.8, h * 0.48);
+      ctx.lineTo(w * 0.86, h * 0.7);
+      ctx.lineTo(w * 0.72, h * 0.54);
+      // Belly line
+      ctx.quadraticCurveTo(w * 0.4, h * 0.78, w * 0.14, h * 0.52);
+      ctx.stroke();
+
+      // Big dorsal fin on top
+      ctx.beginPath();
+      ctx.moveTo(w * 0.4, h * 0.31);
+      ctx.quadraticCurveTo(w * 0.52, h * 0.1, w * 0.52, h * 0.36);
+      ctx.stroke();
+
+      // Gill lines
+      ctx.beginPath();
+      ctx.moveTo(w * 0.33, h * 0.42);
+      ctx.lineTo(w * 0.33, h * 0.52);
+      ctx.moveTo(w * 0.36, h * 0.43);
+      ctx.lineTo(w * 0.36, h * 0.51);
+      ctx.stroke();
+
+      // Eyes
+      ctx.beginPath();
+      ctx.arc(w * 0.24, h * 0.43, 5, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (template === "turtle") {
+      ctx.beginPath();
+      // Sea Turtle main dome shell
+      ctx.moveTo(w * 0.26, h * 0.5);
+      ctx.quadraticCurveTo(w * 0.5, h * 0.18, w * 0.74, h * 0.5);
+      ctx.closePath();
+      ctx.stroke();
+
       // Head
-      ctx.arc(w * 0.35, h * 0.4, 30, 0, Math.PI * 2);
+      ctx.beginPath();
+      ctx.moveTo(w * 0.26, h * 0.45);
+      ctx.quadraticCurveTo(w * 0.1, h * 0.38, w * 0.12, h * 0.56);
+      ctx.quadraticCurveTo(w * 0.18, h * 0.62, w * 0.26, h * 0.52);
       ctx.stroke();
-      // Beak
-      ctx.beginPath();
-      ctx.moveTo(w * 0.28, h * 0.38);
-      ctx.lineTo(w * 0.2, h * 0.42);
-      ctx.lineTo(w * 0.28, h * 0.46);
-      ctx.stroke();
-      // Body
-      ctx.beginPath();
-      ctx.moveTo(w * 0.38, h * 0.44);
-      ctx.quadraticCurveTo(w * 0.55, h * 0.65, w * 0.8, h * 0.55);
-      ctx.quadraticCurveTo(w * 0.55, h * 0.9, w * 0.35, h * 0.52);
-      // Eye
-      ctx.beginPath();
-      ctx.arc(w * 0.32, h * 0.37, 4, 0, Math.PI * 2);
-      // Upper wing
-      ctx.moveTo(w * 0.46, h * 0.48);
-      ctx.quadraticCurveTo(w * 0.55, h * 0.2, w * 0.62, h * 0.15);
-      ctx.quadraticCurveTo(w * 0.52, h * 0.45, w * 0.48, h * 0.49);
-      // Lower wing shadow
-      ctx.moveTo(w * 0.48, h * 0.52);
-      ctx.quadraticCurveTo(w * 0.58, h * 0.75, w * 0.65, h * 0.78);
-      ctx.quadraticCurveTo(w * 0.53, h * 0.58, w * 0.5, h * 0.53);
 
-      ctx.stroke();
-    } else if (template === "pagoda") {
+      // Big swim flippers (Front)
       ctx.beginPath();
-      // Curved traditional pagoda roof of pagoda
-      ctx.moveTo(w * 0.5, h * 0.15);
-      ctx.lineTo(w * 0.2, h * 0.4);
-      ctx.quadraticCurveTo(w * 0.16, h * 0.38, w * 0.18, h * 0.34); // left roof hook
-      ctx.moveTo(w * 0.5, h * 0.15);
-      ctx.lineTo(w * 0.8, h * 0.4);
-      ctx.quadraticCurveTo(w * 0.84, h * 0.38, w * 0.82, h * 0.34); // right roof hook
-      // Main columns
-      ctx.moveTo(w * 0.25, h * 0.4);
-      ctx.lineTo(w * 0.25, h * 0.75);
-      ctx.lineTo(w * 0.75, h * 0.75);
-      ctx.lineTo(w * 0.75, h * 0.4);
+      ctx.moveTo(w * 0.32, h * 0.5);
+      ctx.quadraticCurveTo(w * 0.22, h * 0.84, w * 0.36, h * 0.78);
+      ctx.quadraticCurveTo(w * 0.4, h * 0.58, w * 0.44, h * 0.5);
+      // Back flipper
+      ctx.moveTo(w * 0.62, h * 0.5);
+      ctx.quadraticCurveTo(w * 0.58, h * 0.72, w * 0.68, h * 0.68);
+      ctx.quadraticCurveTo(w * 0.68, h * 0.52, w * 0.7, h * 0.5);
+      ctx.stroke();
+
+      // Shell pattern guidelines
+      ctx.beginPath();
+      ctx.moveTo(w * 0.36, h * 0.38);
+      ctx.lineTo(w * 0.46, h * 0.38);
+      ctx.moveTo(w * 0.54, h * 0.38);
+      ctx.lineTo(w * 0.64, h * 0.38);
+      ctx.stroke();
+    } else if (template === "octopus") {
+      ctx.beginPath();
+      // Octopus round bulbous head/mantle
+      ctx.arc(w * 0.5, h * 0.38, 30, Math.PI, 0);
+      // Sides
+      ctx.lineTo(w * 0.65, h * 0.5);
+      ctx.quadraticCurveTo(w * 0.5, h * 0.52, w * 0.35, h * 0.5);
       ctx.closePath();
-      // Pillar (Chùa Một Cột stone support)
-      ctx.strokeRect(w * 0.44, h * 0.75, w * 0.12, h * 0.2);
-      // stairs
-      ctx.moveTo(w * 0.3, h * 0.55);
-      ctx.lineTo(w * 0.7, h * 0.55);
-
       ctx.stroke();
-    } else if (template === "halong") {
+
+      // Friendly eyes
       ctx.beginPath();
-      // Rocky Islands
-      ctx.moveTo(w * 0.05, h * 0.85);
-      ctx.quadraticCurveTo(w * 0.15, h * 0.3, w * 0.28, h * 0.85);
+      ctx.arc(w * 0.44, h * 0.42, 5, 0, Math.PI * 2);
+      ctx.moveTo(w * 0.56, h * 0.42);
+      ctx.arc(w * 0.56, h * 0.42, 5, 0, Math.PI * 2);
+      // Cute smile
+      ctx.moveTo(w * 0.47, h * 0.46);
+      ctx.quadraticCurveTo(w * 0.5, h * 0.5, w * 0.53, h * 0.46);
+      ctx.stroke();
 
-      ctx.moveTo(w * 0.32, h * 0.85);
-      ctx.quadraticCurveTo(w * 0.45, h * 0.45, w * 0.55, h * 0.85);
-
-      ctx.moveTo(w * 0.64, h * 0.85);
-      ctx.quadraticCurveTo(w * 0.78, h * 0.35, w * 0.92, h * 0.85);
-
-      // Waves lines
-      ctx.moveTo(w * 0.1, h * 0.9);
-      ctx.lineTo(w * 0.9, h * 0.9);
-
-      // Sailboat
-      ctx.moveTo(w * 0.4, h * 0.87);
-      ctx.lineTo(w * 0.5, h * 0.87);
-      ctx.lineTo(w * 0.48, h * 0.8);
-      ctx.lineTo(w * 0.42, h * 0.8);
-      ctx.closePath();
-      // Sail
-      ctx.moveTo(w * 0.45, h * 0.8);
-      ctx.lineTo(w * 0.45, h * 0.64);
-      ctx.lineTo(w * 0.52, h * 0.72);
-      ctx.closePath();
-
+      // Hanging curly tentacles (4 loops)
+      ctx.beginPath();
+      // Tentacle 1
+      ctx.moveTo(w * 0.37, h * 0.49);
+      ctx.bezierCurveTo(w * 0.28, h * 0.68, w * 0.44, h * 0.78, w * 0.34, h * 0.88);
+      // Tentacle 2
+      ctx.moveTo(w * 0.46, h * 0.51);
+      ctx.bezierCurveTo(w * 0.44, h * 0.72, w * 0.5, h * 0.82, w * 0.47, h * 0.89);
+      // Tentacle 3
+      ctx.moveTo(w * 0.54, h * 0.51);
+      ctx.bezierCurveTo(w * 0.56, h * 0.72, w * 0.5, h * 0.82, w * 0.53, h * 0.89);
+      // Tentacle 4
+      ctx.moveTo(w * 0.63, h * 0.49);
+      ctx.bezierCurveTo(w * 0.72, h * 0.68, w * 0.56, h * 0.78, w * 0.66, h * 0.88);
       ctx.stroke();
     }
   };
@@ -519,10 +596,12 @@ export default function App() {
     setActiveTab("ar-studio");
 
     const templateIntroMap: Record<TemplateType, string> = {
-      fish: "Bóng ảo của cá mập bơi lượn ngay trên camera điện thoại. Thật rực rỡ!",
-      bird: "Chim bồ câu trắng mang đôi cánh bé tô đã cất tiếng hát du dương giữa nền trời mây trắng!",
-      pagoda: "Kiến trúc hoa sen Chùa Một Cột rực sáng sắc màu bé tô trôi tấp nập trong gió xuân.",
-      halong: "Những ngọn núi kì vĩ ngàn năm Hạ Long nhấp nhô tuyệt đẹp bên buồm đỏ thắm lướt biển khơi!",
+      whale: "Cá voi xanh khổng lồ rực sáng sắc màu bé tô đang vẫy đuôi kiêm đại dương tự do!",
+      dolphin: "Bạn cá heo thông minh nhào lộn tinh nghịch, vượt sóng sinh động trên màn ảnh nhỏ!",
+      goldfish: "Chú cá vàng óng ánh bơi lượn uốn mình điệu đà tấp nập sủi bọt bóng phép thuật!",
+      shark: "Cá mập dũng mãnh rực lửa oai vệ tuần tra rạn san hô, làm sống động căn phòng mĩ thuật!",
+      turtle: "Bạn rùa biển hiền lành, chậm rãi bơi quanh phòng khéo léo mang chiếc mai lung linh!",
+      octopus: "Bạn bạch tuộc tinh nghịch dùng xúc tu vẫy tay chào bé, tung màu nước nhiệm màu!",
     };
 
     setArSpeechText(templateIntroMap[selectedTemplate]);
@@ -742,16 +821,18 @@ export default function App() {
       setStars((prev) => prev + 15);
       setShadowScore((prev) => prev + 1);
       const names: Record<TemplateType, string> = {
-        fish: "Cá Vàng Đại Dương",
-        bird: "Bồ Câu Hòa Bình",
-        pagoda: "Chùa Một Cột",
-        halong: "Vịnh Hạ Long Kì Vĩ",
+        whale: "Cá Voi Xanh Khổng Lồ 🐳",
+        dolphin: "Cá Heo Thông Minh 🐬",
+        goldfish: "Cá Vàng Đại Dương 🐠",
+        shark: "Cá Mập Kì Vĩ 🦈",
+        turtle: "Rùa Biển Cần Mẫn 🐢",
+        octopus: "Bạch Tuộc Tinh Nghịch 🐙",
       };
       setShadowFeedback(`Chính xác rồi! Con thông minh quá! Đây đúng là chiếc bóng của "${names[shadowTarget]}". Thưởng bé +15 Sao! ⭐🎨`);
       
-      const templates: TemplateType[] = ["fish", "bird", "pagoda", "halong"];
+      const templates: TemplateType[] = ["whale", "dolphin", "goldfish", "shark", "turtle", "octopus"];
       const nextTarget = templates.filter((t) => t !== shadowTarget)[
-        Math.floor(Math.random() * 3)
+        Math.floor(Math.random() * 5)
       ];
       setTimeout(() => {
         setShadowTarget(nextTarget);
@@ -764,10 +845,12 @@ export default function App() {
   };
 
   const templateVietnameseNames: Record<TemplateType, string> = {
-    fish: "Cá Vàng Đại Dương",
-    bird: "Bồ Câu Hòa Bình",
-    pagoda: "Chùa Một Cột",
-    halong: "Vịnh Hạ Long Kì Vĩ",
+    whale: "Cá Voi Xanh Khổng Lồ 🐳",
+    dolphin: "Cá Heo Thông Minh 🐬",
+    goldfish: "Cá Vàng Đại Dương 🐠",
+    shark: "Cá Mập Kì Vĩ 🦈",
+    turtle: "Rùa Biển Cần Mẫn 🐢",
+    octopus: "Bạch Tuộc Tinh Nghịch 🐙",
   };
 
   const getStyleThemeColor = (colorHex: string) => {
@@ -956,7 +1039,7 @@ export default function App() {
                 🌟 Chọn Mẫu Tô Vẽ
               </h3>
               <div className="flex flex-col gap-3">
-                {(["fish", "bird", "pagoda", "halong"] as TemplateType[]).map((t) => (
+                {(["whale", "dolphin", "goldfish", "shark", "turtle", "octopus"] as TemplateType[]).map((t) => (
                   <button
                     key={t}
                     id={`tpl-card-${t}`}
@@ -966,21 +1049,23 @@ export default function App() {
                     }}
                     className={`p-4 rounded-2xl text-left border transition flex items-center gap-3 ${
                       selectedTemplate === t
-                        ? "border-indigo-505 bg-indigo-500/10 text-white"
+                        ? "border-indigo-505 bg-indigo-500/10 text-white shadow-md shadow-indigo-505/5"
                         : "border-zinc-800 bg-zinc-950/40 text-zinc-400 hover:bg-zinc-800 hover:text-white"
                     }`}
                   >
                     <span className="text-3xl">
-                      {t === "fish" && "🐠"}
-                      {t === "bird" && "🐦"}
-                      {t === "pagoda" && "🏛️"}
-                      {t === "halong" && "⛵"}
+                      {t === "whale" && "🐳"}
+                      {t === "dolphin" && "🐬"}
+                      {t === "goldfish" && "🐠"}
+                      {t === "shark" && "🦈"}
+                      {t === "turtle" && "🐢"}
+                      {t === "octopus" && "🐙"}
                     </span>
                     <div>
                       <span className="font-extrabold text-xs text-zinc-200 block">
                         {templateVietnameseNames[t]}
                       </span>
-                      <span className="text-[10px] text-zinc-500 italic">Được yêu thích nhất</span>
+                      <span className="text-[10px] text-zinc-500 italic">Mẫu tranh đại dương</span>
                     </div>
                   </button>
                 ))}
@@ -1510,10 +1595,12 @@ export default function App() {
                 onClick={() => {
                   playWebSynth("success");
                   const voices: any = {
-                    fish: "Bạn vẽ cá bơi lội sinh động và cực kì thông minh!",
-                    bird: "Chú chim bồ câu này tô màu thật hoàn hảo tuyệt đối!",
-                    pagoda: "Chùa Một Cột cổ kính mang đậm mĩ học dân gian tươi mới!",
-                    halong: "Vịnh Hạ Long của họa sĩ nhỏ hùng vĩ và bạt ngàn màu kì diệu!",
+                    whale: "Bạn nhỏ vẽ bạn cá voi xanh đại dương uy nghi và khoáng đạt vô cùng!",
+                    dolphin: "Bạn nhỏ vẽ bạn cá heo thông minh lướt sóng cực kì ngoạn mục!",
+                    goldfish: "Bạn nhỏ vẽ bạn cá vàng óng ánh lung linh, đáng yêu làm sao!",
+                    shark: "Bạn nhỏ vẽ bạn cá mập dũng mãnh, oai hùng vượt qua muôn ngàn trùng khơi!",
+                    turtle: "Bạn nhỏ vẽ bạn rùa biển cần mẫn, chăm chỉ mang chiếc mai rực rỡ sắc màu!",
+                    octopus: "Bạn nhỏ vẽ bạn bạch tuộc tinh nghịch với những xúc tu thông thái diệu kì!",
                   };
                   const currentVoice = voices[selectedTemplate] || "Bạn là họa sĩ nhỏ tinh nghịch của tôi!";
                   speakPedagogicalText(currentVoice);
@@ -1579,9 +1666,8 @@ export default function App() {
                   />
                 </div>
               </div>
-
               {/* Select buttons for base raw colors */}
-              <div className="grid grid-cols-4 gap-2 mb-4">
+              <div className="grid grid-cols-4 gap-2 mb-4 font-bold text-xs select-none">
                 <button
                   id="ingredient-red"
                   onClick={() => handleSelectMixerIngredient("red")}
@@ -1601,12 +1687,12 @@ export default function App() {
                   onClick={() => handleSelectMixerIngredient("blue")}
                   className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs py-2.5 rounded-xl transition"
                 >
-                  Xanh lam🔵
+                  Xanh🔵
                 </button>
                 <button
                   id="ingredient-white"
                   onClick={() => handleSelectMixerIngredient("white")}
-                  className="bg-zinc-805 border border-zinc-700 hover:bg-zinc-750 text-zinc-200 font-extrabold text-xs py-2.5 rounded-xl transition"
+                  className="bg-zinc-800 border border-zinc-700 hover:bg-zinc-750 text-zinc-200 font-extrabold text-xs py-2.5 rounded-xl transition"
                 >
                   Trắng⚪
                 </button>
@@ -1616,7 +1702,7 @@ export default function App() {
                 <button
                   id="btn-test-pitch"
                   onClick={checkMixResult}
-                  className="flex-grow bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs py-3.5 rounded-2xl shadow active:scale-95 transition-all text-center uppercase border border-indigo-550"
+                  className="flex-grow bg-indigo-600 hover:bg-indigo-505 text-white font-extrabold text-xs py-3.5 rounded-2xl shadow active:scale-95 transition-all text-center uppercase border border-indigo-550"
                 >
                   🔮 Kiểm Tra Phối Màu Phép Thuật!
                 </button>
@@ -1648,34 +1734,44 @@ export default function App() {
             <div id="section-shadow-game" className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl shadow-xl flex flex-col justify-between">
               <div className="text-center mb-4">
                 <span className="text-4xl animate-bounce mb-1 inline-block">👤</span>
-                <h3 className="font-extrabold text-indigo-400 text-lg">Bóng Bí Ẩn: Nhận Diện Tranh Mẫu</h3>
-                <p className="text-xs text-zinc-400 font-bold">Quan sát độ tương phản hình khối để rèn luyện tư duy mĩ thuật!</p>
+                <h3 className="font-extrabold text-indigo-400 text-lg">Bóng Bí Ản Đại Dương</h3>
+                <p className="text-xs text-zinc-400 font-bold">Bóng của hình dạng màu đen đặt trên nền màu trắng!</p>
               </div>
 
               {/* Displaying Silhouette of current mystery target */}
-              <div className="bg-zinc-950 border border-zinc-850 p-5 rounded-2xl flex flex-col items-center justify-center flex-grow mb-4">
+              <div className="bg-zinc-950 border border-zinc-85c p-5 rounded-2xl flex flex-col items-center justify-center flex-grow mb-4">
                 <p className="text-xs text-zinc-450 font-bold mb-3 text-center">
                   Bé có phát hiện chiếc bóng bí ẩn này thuộc về bức vẽ nào dưới đây?
                 </p>
 
-                {shadowTarget === "fish" && (
-                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-zinc-950 mx-auto fill-current bg-zinc-950 border border-zinc-800 p-4 rounded-3xl shadow-inner cursor-pointer hover:scale-105 transition-all">
-                    <path d="M15 50 Q40 15 75 50 Q40 85 15 50 Z M75 50 L90 30 L84 50 L90 70 Z M45 30 Q55 15 60 25 M48 68 Q55 80 58 73" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                {shadowTarget === "whale" && (
+                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-black mx-auto bg-white border border-zinc-200 p-4 rounded-3xl shadow-sm cursor-pointer hover:scale-105 transition-all">
+                    <path d="M15 55 Q25 40 75 50 L90 38 L88 52 L90 66 L75 55 Z" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                   </svg>
                 )}
-                {shadowTarget === "bird" && (
-                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-zinc-950 mx-auto fill-current bg-zinc-950 border border-zinc-800 p-4 rounded-3xl shadow-inner cursor-pointer hover:scale-105 transition-all">
-                    <path d="M35 15 A20 20 0 0 0 35 55 A20 20 0 0 0 35 15 Z M28 38 L10 42 L28 46 Z M38 44 Q55 65 80 55 Q55 90 35 52 M46 48 Q55 20 62 15 Q52 45 48 49 M48 52 Q58 75 65 78 Q53 58 50 53" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                {shadowTarget === "dolphin" && (
+                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-black mx-auto bg-white border border-zinc-200 p-4 rounded-3xl shadow-sm cursor-pointer hover:scale-105 transition-all">
+                    <path d="M12 60 Q28 18 82 50 L92 58 L84 52 L90 44 Z" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                   </svg>
                 )}
-                {shadowTarget === "pagoda" && (
-                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-zinc-950 mx-auto fill-current bg-zinc-950 border border-zinc-800 p-4 rounded-3xl shadow-inner cursor-pointer hover:scale-105 transition-all">
-                    <path d="M50 15 L20 40 Q16 38 18 34 M50 15 L80 40 Q84 38 82 34 M25 40 L25 75 L75 75 L75 40 Z M44 75 h12 v20 h-12 z" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                {shadowTarget === "goldfish" && (
+                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-black mx-auto bg-white border border-zinc-200 p-4 rounded-3xl shadow-sm cursor-pointer hover:scale-105 transition-all">
+                    <path d="M18 50 Q42 16 68 50 Q42 84 18 50 Z M68 50 Q86 22 88 50 Z" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                   </svg>
                 )}
-                {shadowTarget === "halong" && (
-                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-zinc-950 mx-auto fill-current bg-zinc-950 border border-zinc-800 p-4 rounded-3xl shadow-inner cursor-pointer hover:scale-105 transition-all">
-                    <path d="M5 85 Q15 30 28 85 M32 85 Q45 45 55 85 M64 85 Q78 35 92 85 M40 87 h10 l-2 -7 h-6 z M45 80 v-16 l7 8 z" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                {shadowTarget === "shark" && (
+                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-black mx-auto bg-white border border-zinc-200 p-4 rounded-3xl shadow-sm cursor-pointer hover:scale-105 transition-all">
+                    <path d="M14 52 Q40 22 74 46 L86 26 L80 48 L86 70 L72 54 Z" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                  </svg>
+                )}
+                {shadowTarget === "turtle" && (
+                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-black mx-auto bg-white border border-zinc-200 p-4 rounded-3xl shadow-sm cursor-pointer hover:scale-105 transition-all">
+                    <path d="M26 50 Q50 18 74 50 Z M26 45 Q10 38 12 56 M32 50 Q22 84 36 78 Q40 58 44 50" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                  </svg>
+                )}
+                {shadowTarget === "octopus" && (
+                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-black mx-auto bg-white border border-zinc-200 p-4 rounded-3xl shadow-sm cursor-pointer hover:scale-105 transition-all">
+                    <path d="M35 50 A30 30 0 1 1 65 50 Z M35 49 Q20 70 34 85 M46 51 Q44 72 47 89" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                   </svg>
                 )}
 
@@ -1690,34 +1786,48 @@ export default function App() {
                 <p className="text-xs font-extrabold text-zinc-300 text-center">
                   Bấm để đoán chiếc bóng thuộc về mẫu phác họa nào:
                 </p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   <button
-                    id="shadow-guess-fish"
-                    onClick={() => handleShadowGuessSubmit("fish")}
-                    className="text-left bg-zinc-950 hover:bg-zinc-850 border border-zinc-800 p-3 rounded-2xl text-xs font-extrabold text-zinc-300 hover:text-white flex items-center gap-1.5 transition active:scale-98"
+                    id="shadow-guess-whale"
+                    onClick={() => handleShadowGuessSubmit("whale")}
+                    className="text-left bg-zinc-950 hover:bg-zinc-850 border border-zinc-805 p-3 rounded-2xl text-xs font-extrabold text-zinc-300 hover:text-white flex items-center justify-center gap-1 transition active:scale-98 animate-fade-in"
                   >
-                    🐠 Cá Vàng Dương
+                    🐳 Cá Voi Xanh
                   </button>
                   <button
-                    id="shadow-guess-bird"
-                    onClick={() => handleShadowGuessSubmit("bird")}
-                    className="text-left bg-zinc-950 hover:bg-zinc-850 border border-zinc-800 p-3 rounded-2xl text-xs font-extrabold text-zinc-300 hover:text-white flex items-center gap-1.5 transition active:scale-98"
+                    id="shadow-guess-dolphin"
+                    onClick={() => handleShadowGuessSubmit("dolphin")}
+                    className="text-left bg-zinc-950 hover:bg-zinc-850 border border-zinc-805 p-3 rounded-2xl text-xs font-extrabold text-zinc-300 hover:text-white flex items-center justify-center gap-1 transition active:scale-98 animate-fade-in"
                   >
-                    🐦 Bồ Câu Trắng
+                    🐬 Cá Heo
                   </button>
                   <button
-                    id="shadow-guess-pagoda"
-                    onClick={() => handleShadowGuessSubmit("pagoda")}
-                    className="text-left bg-zinc-950 hover:bg-zinc-850 border border-zinc-800 p-3 rounded-2xl text-xs font-extrabold text-zinc-300 hover:text-white flex items-center gap-1.5 transition active:scale-98"
+                    id="shadow-guess-goldfish"
+                    onClick={() => handleShadowGuessSubmit("goldfish")}
+                    className="text-left bg-zinc-950 hover:bg-zinc-850 border border-zinc-805 p-3 rounded-2xl text-xs font-extrabold text-zinc-300 hover:text-white flex items-center justify-center gap-1 transition active:scale-98 animate-fade-in"
                   >
-                    🏛️ Chùa Một Cột
+                    🐠 Cá Vàng
                   </button>
                   <button
-                    id="shadow-guess-halong"
-                    onClick={() => handleShadowGuessSubmit("halong")}
-                    className="text-left bg-zinc-950 hover:bg-zinc-850 border border-zinc-800 p-3 rounded-2xl text-xs font-extrabold text-zinc-300 hover:text-white flex items-center gap-1.5 transition active:scale-98"
+                    id="shadow-guess-shark"
+                    onClick={() => handleShadowGuessSubmit("shark")}
+                    className="text-left bg-zinc-950 hover:bg-zinc-850 border border-zinc-805 p-3 rounded-2xl text-xs font-extrabold text-zinc-300 hover:text-white flex items-center justify-center gap-1 transition active:scale-98 animate-fade-in"
                   >
-                    ⛵ Vịnh Hạ Long
+                    🦈 Cá Mập
+                  </button>
+                  <button
+                    id="shadow-guess-turtle"
+                    onClick={() => handleShadowGuessSubmit("turtle")}
+                    className="text-left bg-zinc-950 hover:bg-zinc-850 border border-zinc-855 p-3 rounded-2xl text-xs font-extrabold text-zinc-300 hover:text-white flex items-center justify-center gap-1 transition active:scale-98 animate-fade-in"
+                  >
+                    🐢 Rùa Biển
+                  </button>
+                  <button
+                    id="shadow-guess-octopus"
+                    onClick={() => handleShadowGuessSubmit("octopus")}
+                    className="text-left bg-zinc-950 hover:bg-zinc-850 border border-zinc-855 p-3 rounded-2xl text-xs font-extrabold text-zinc-300 hover:text-white flex items-center justify-center gap-1 transition active:scale-98 animate-fade-in"
+                  >
+                    🐙 Bạch Tuộc
                   </button>
                 </div>
 

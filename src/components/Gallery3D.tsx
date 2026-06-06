@@ -8,10 +8,12 @@ interface Gallery3DProps {
 }
 
 const templateVietnameseNames: Record<TemplateType, string> = {
-  fish: "Cá Vàng Đại Dương",
-  bird: "Bồ Câu Hòa Bình",
-  pagoda: "Chùa Một Cột",
-  halong: "Vịnh Hạ Long Kì Vĩ",
+  whale: "Cá Voi Xanh Đại Dương",
+  dolphin: "Bé Cá Heo Lướt Sóng",
+  goldfish: "Cá Vàng Óng Ánh",
+  shark: "Cá Mập Tuần Tra",
+  turtle: "Bác Rùa Biển Chăm Chỉ",
+  octopus: "Bạn Bạch Tuộc Tinh Nghịch",
 };
 
 export default function Gallery3D({ activeCanvasDataUrl, savedArtworks }: Gallery3DProps) {

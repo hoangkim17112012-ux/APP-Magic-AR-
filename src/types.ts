@@ -1,4 +1,4 @@
-export type TemplateType = "fish" | "bird" | "pagoda" | "halong";
+export type TemplateType = "whale" | "dolphin" | "goldfish" | "shark" | "turtle" | "octopus";
 
 export type TabType = "color-scan" | "ar-studio" | "games" | "gallery3d" | "teacher-ai";
 

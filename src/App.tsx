@@ -25,6 +25,48 @@ import {
 import { SavedArtwork, StudentSubmission, TabType, TemplateType } from "./types";
 import Gallery3D from "./components/Gallery3D";
 
+// Playful backgrounds for kids' sea drawings
+interface OceanScene {
+  id: string;
+  name: string;
+  emoji: string;
+  url: string;
+  description: string;
+}
+
+const oceanScenes: OceanScene[] = [
+  {
+    id: "underwater_coral",
+    name: "Lòng Đại Dương 🐠",
+    emoji: "🐳",
+    url: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80",
+    description: "Khung cảnh sâu thẳm lung linh tia nắng rọi qua dòng nước xanh ngọc tuyệt đẹp",
+  },
+  {
+    id: "sunset_ocean",
+    name: "Vùng Biển Xanh 🌊",
+    emoji: "🏝️",
+    url: "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=1200&q=80",
+    description: "Nước biển xanh ngắt lấp lánh hòa cùng bầu trời rực sáng thơ mộng",
+  },
+  {
+    id: "coral_reef_magic",
+    name: "San Hô Đại Dương 🪸",
+    emoji: "🪸",
+    url: "https://images.unsplash.com/photo-1546026423-cc4642628d2b?auto=format&fit=crop&w=1200&q=80",
+    description: "Rạn san hô đầy màu sắc rực rỡ kì ảo lấp lánh dưới đáy đại dương nhiệm màu",
+  },
+];
+
+const recommendedScenes: Record<TemplateType, string> = {
+  whale: "underwater_coral",
+  dolphin: "sunset_ocean",
+  goldfish: "coral_reef_magic",
+  shark: "underwater_coral",
+  turtle: "coral_reef_magic",
+  octopus: "coral_reef_magic",
+};
+
 // Playful colors for kids
 const kidColors = [
   { hex: "#ef4444", name: "Đỏ Mặt Trời ☀️" },
@@ -106,6 +148,7 @@ export default function App() {
   const [arScanSuccess, setArScanSuccess] = useState<boolean>(false);
   const [arProjecting, setArProjecting] = useState<boolean>(false);
   const [arActiveFilter, setArActiveFilter] = useState<string>("none");
+  const [selectedOceanScene, setSelectedOceanScene] = useState<string>("underwater_coral");
   const [arMotionSpeed, setArMotionSpeed] = useState<number>(3);
   const [arSparkleCount, setArSparkleCount] = useState<number>(15);
 
@@ -1045,6 +1088,7 @@ export default function App() {
                     id={`tpl-card-${t}`}
                     onClick={() => {
                       setSelectedTemplate(t);
+                      setSelectedOceanScene(recommendedScenes[t] || "deep_blue_abyss");
                       playWebSynth("click");
                     }}
                     className={`p-4 rounded-2xl text-left border transition flex items-center gap-3 ${
@@ -1243,372 +1287,399 @@ export default function App() {
 
         {/* TAB 2: AR Live Stream Simulation or Real Camera */}
         {activeTab === "ar-studio" && (
-          <div id="section-ar-studio" className="max-w-4xl mx-auto bg-zinc-900 border border-zinc-800 rounded-3xl shadow-2xl p-6">
-            <div className="text-center mb-5">
+          <div id="section-ar-studio" className="max-w-6xl mx-auto bg-zinc-900 border border-zinc-c00 rounded-3xl shadow-2xl p-6 md:p-8">
+            <div className="text-center mb-6">
               <h2 className="text-xl md:text-3xl font-extrabold text-zinc-100 flex items-center justify-center gap-2">
                 🔮 Quét Thực Tế Tăng Cường AR & Tạo Video Hoạt Họa
               </h2>
               <p className="text-xs text-zinc-500 font-bold mt-1">
-                Công nghệ thông minh giúp nhận diện tranh vẽ của bé và biến chúng thành video chuyển động đáng yêu!
+                Công nghệ thông minh giúp nhận diện tranh vẽ của bé và biến chúng thành video chuyển động đáng yêu trong các cảnh đại dương kì vĩ!
               </p>
             </div>
 
-            {/* Video or background canvas viewport */}
-            <div className="relative aspect-video w-full max-w-2xl mx-auto rounded-3xl bg-zinc-950 overflow-hidden border border-zinc-805 shadow-2xl">
-              
-              {/* Fallback scenery backgrounds */}
-              <div
-                id="fake-camera-backdrop"
-                style={{
-                  backgroundImage:
-                    selectedTemplate === "fish"
-                      ? "url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80')"
-                      : selectedTemplate === "bird"
-                      ? "url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80')"
-                      : "url('https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80')",
-                  filter:
-                    arActiveFilter === "ocean"
-                      ? "hue-rotate(180deg) saturate(1.4)"
-                      : arActiveFilter === "sunset"
-                      ? "sepia(0.5) hue-rotate(-15deg) saturate(1.2)"
-                      : arActiveFilter === "neon"
-                      ? "invert(0.1) saturate(2) hue-rotate(90deg)"
-                      : "none"
-                }}
-                className={`absolute inset-0 bg-cover bg-center transition-all duration-500 ${
-                  isRealCameraOn ? "opacity-35" : "opacity-100"
-                }`}
-              />
-
-              {/* Hardware Video layer */}
-              <video
-                ref={videoRef}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-                  isRealCameraOn ? "opacity-100" : "opacity-0 pointer-events-none"
-                }`}
-                style={{
-                  filter:
-                    arActiveFilter === "ocean"
-                      ? "hue-rotate(180deg) saturate(1.4)"
-                      : arActiveFilter === "sunset"
-                      ? "sepia(0.5) hue-rotate(-15deg) saturate(1.2)"
-                      : arActiveFilter === "neon"
-                      ? "invert(0.1) saturate(2) hue-rotate(90deg)"
-                      : "none"
-                }}
-                playsInline
-                muted
-              />
-
-              {/* STATE 1: arScanning (Computing Camera OCR/Image Analysis fast) */}
-              {arScanning && (
-                <div className="absolute inset-0 bg-black/85 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 text-center">
-                  <div className="relative w-24 h-24 mb-6 flex items-center justify-center">
-                    <div className="absolute inset-0 border-4 border-dashed border-indigo-500 border-t-transparent rounded-full animate-spin" />
-                    <div className="absolute inset-3 border-2 border-pink-500 rounded-full animate-ping" />
-                    <Sparkles className="w-8 h-8 text-indigo-400 animate-pulse" />
-                  </div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Left Column: Viewport Video Screen and Under-screen Projection Settings */}
+              <div className="lg:col-span-7 space-y-4">
+                {/* Video or background canvas viewport */}
+                <div className="relative aspect-video w-full rounded-3xl bg-zinc-950 overflow-hidden border border-zinc-805 shadow-2xl">
                   
-                  <span className="text-white text-lg font-black tracking-widest">{arScanProgress}%</span>
-                  
-                  <div className="w-64 bg-zinc-800 h-2 rounded-full overflow-hidden border border-zinc-700 mt-2.5">
-                    <div className="bg-gradient-to-r from-pink-500 via-indigo-500 to-cyan-400 h-full transition-all duration-150" style={{ width: `${arScanProgress}%` }} />
-                  </div>
+                  {/* Fallback scenery backgrounds */}
+                  <div
+                    id="fake-camera-backdrop"
+                    style={{
+                      backgroundImage: `url('${(oceanScenes.find(s => s.id === selectedOceanScene) || oceanScenes[0]).url}')`,
+                      filter:
+                        arActiveFilter === "ocean"
+                          ? "hue-rotate(180deg) saturate(1.4)"
+                          : arActiveFilter === "sunset"
+                          ? "sepia(0.5) hue-rotate(-15deg) saturate(1.2)"
+                          : arActiveFilter === "neon"
+                          ? "invert(0.1) saturate(2) hue-rotate(90deg)"
+                          : "none"
+                    }}
+                    className={`absolute inset-0 bg-cover bg-center transition-all duration-500 ${
+                      isRealCameraOn ? "opacity-35" : "opacity-100"
+                    }`}
+                  />
 
-                  <p className="text-zinc-300 text-xs font-black mt-4 animate-pulse uppercase">
-                    {arScanProgress < 30 && "⚡ Đang khởi tạo camera thông minh..."}
-                    {arScanProgress >= 30 && arScanProgress < 60 && "🌈 Đang phân tách dải màu bé vẽ..."}
-                    {arScanProgress >= 60 && arScanProgress < 90 && "📐 Định dạng tọa độ đường viền nét vẽ..."}
-                    {arScanProgress >= 90 && "🎬 Đang đóng gói hoạt cảnh video AR chuyển động..."}
-                  </p>
-                  <p className="text-[10px] text-zinc-500 font-bold mt-1">Hệ thống quét cải tiến - Siêu tốc độ!</p>
-                </div>
-              )}
+                  {/* Hardware Video layer */}
+                  <video
+                    ref={videoRef}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                      isRealCameraOn ? "opacity-100" : "opacity-0 pointer-events-none"
+                    }`}
+                    style={{
+                      filter:
+                        arActiveFilter === "ocean"
+                          ? "hue-rotate(180deg) saturate(1.4)"
+                          : arActiveFilter === "sunset"
+                          ? "sepia(0.5) hue-rotate(-15deg) saturate(1.2)"
+                          : arActiveFilter === "neon"
+                          ? "invert(0.1) saturate(2) hue-rotate(90deg)"
+                          : "none"
+                    }}
+                    playsInline
+                    muted
+                  />
 
-              {/* STATE 2: arScanSuccess but not yet projecting */}
-              {arScanSuccess && !arProjecting && (
-                <div className="absolute inset-0 bg-zinc-950/90 backdrop-blur-md z-30 flex flex-col items-center justify-center p-6 text-center">
-                  <div className="w-16 h-16 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-full flex items-center justify-center shadow-lg text-3xl mb-4 animate-bounce">
-                    ✓
-                  </div>
-                  <h3 className="text-emerald-400 text-base md:text-lg font-black">
-                    QUÉT TRANH & ĐỊNH HÌNH THÀNH CÔNG!
-                  </h3>
-                  <p className="text-zinc-300 text-xs font-bold max-w-sm mt-1 leading-relaxed">
-                    Hệ thống AI Cô Điệp đã biến tranh mẫu vẽ của bé thành dải chuyển động hoạt họa 3D riêng biệt. Hãy bấm nút dưới đây để xem phép màu!
-                  </p>
+                  {/* STATE 1: arScanning (Computing Camera OCR/Image Analysis fast) */}
+                  {arScanning && (
+                    <div className="absolute inset-0 bg-black/85 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 text-center">
+                      <div className="relative w-24 h-24 mb-6 flex items-center justify-center">
+                        <div className="absolute inset-0 border-4 border-dashed border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                        <div className="absolute inset-3 border-2 border-pink-500 rounded-full animate-ping" />
+                        <Sparkles className="w-8 h-8 text-indigo-400 animate-pulse" />
+                      </div>
+                      
+                      <span className="text-white text-lg font-black tracking-widest">{arScanProgress}%</span>
+                      
+                      <div className="w-64 bg-zinc-800 h-2 rounded-full overflow-hidden border border-zinc-700 mt-2.5">
+                        <div className="bg-gradient-to-r from-pink-500 via-indigo-500 to-cyan-400 h-full transition-all duration-150" style={{ width: `${arScanProgress}%` }} />
+                      </div>
 
-                  <div className="mt-5">
-                    <button
-                      id="btn-confirm-start-projection"
-                      onClick={() => {
-                        playWebSynth("success");
-                        setArProjecting(true);
-                        speakPedagogicalText("Khởi chiếu video chuyển động nghệ thuật AR của con! Con xem bạn rùa bạn cá bơi lội sinh động chưa này!");
-                      }}
-                      className="bg-emerald-500 hover:bg-emerald-400 active:scale-95 transition-all text-white font-black text-sm px-6 py-4 rounded-2xl shadow-[0_0_20px_rgba(16,185,129,0.45)] flex items-center gap-2 border border-white/20 animate-pulse cursor-pointer"
-                    >
-                      <Play className="w-4 h-4 fill-current" /> XÁC NHẬN & XEM VIDEO CHUYỂN ĐỘNG AR 🚀
-                    </button>
-                  </div>
-                </div>
-              )}
+                      <p className="text-zinc-300 text-xs font-black mt-4 animate-pulse uppercase">
+                        {arScanProgress < 30 && "⚡ Đang khởi tạo camera thông minh..."}
+                        {arScanProgress >= 30 && arScanProgress < 60 && "🌈 Đang phân tách dải màu bé vẽ..."}
+                        {arScanProgress >= 60 && arScanProgress < 90 && "📐 Định dạng tọa độ đường viền nét vẽ..."}
+                        {arScanProgress >= 90 && "🎬 Đang đóng gói hoạt cảnh video AR chuyển động..."}
+                      </p>
+                      <p className="text-[10px] text-zinc-500 font-bold mt-1">Hệ thống quét cải tiến - Siêu tốc độ!</p>
+                    </div>
+                  )}
 
-              {/* STATE 3: arProjecting (Playing video with animated drawings) */}
-              {arProjecting && (
-                <>
-                  {/* Generated floating sparkles / bubbles */}
-                  <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
-                    {Array.from({ length: arSparkleCount }).map((_, i) => (
-                      <motion.div
-                        key={`bubble-${i}`}
-                        initial={{
-                          x: Math.random() * 550,
-                          y: 200,
-                          opacity: Math.random() * 0.7 + 0.3,
-                          scale: Math.random() * 1.2 + 0.4
-                        }}
-                        animate={{
-                          y: -50,
-                          x: Math.random() * 550,
-                          opacity: [0, 0.8, 0]
+                  {/* STATE 2: arScanSuccess but not yet projecting */}
+                  {arScanSuccess && !arProjecting && (
+                    <div className="absolute inset-0 bg-zinc-950/90 backdrop-blur-md z-30 flex flex-col items-center justify-center p-6 text-center">
+                      <div className="w-16 h-16 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-full flex items-center justify-center shadow-lg text-3xl mb-4 animate-bounce">
+                        ✓
+                      </div>
+                      <h3 className="text-emerald-400 text-base md:text-lg font-black">
+                        QUÉT TRANH & ĐỊNH HÌNH THÀNH CÔNG!
+                      </h3>
+                      <p className="text-zinc-300 text-xs font-bold max-w-sm mt-1 leading-relaxed">
+                        Hệ thống AI Cô Điệp đã biến tranh mẫu vẽ của bé thành dải chuyển động hoạt họa 3D riêng biệt. Hãy bấm nút dưới đây để xem phép màu!
+                      </p>
+
+                      <div className="mt-5">
+                        <button
+                          id="btn-confirm-start-projection"
+                          onClick={() => {
+                            playWebSynth("success");
+                            setArProjecting(true);
+                            speakPedagogicalText("Khởi chiếu video chuyển động nghệ thuật AR của con! Con xem bạn rùa bạn cá bơi lội sinh động chưa này!");
+                          }}
+                          className="bg-emerald-500 hover:bg-emerald-400 active:scale-95 transition-all text-white font-black text-sm px-6 py-4 rounded-2xl shadow-[0_0_20px_rgba(16,185,129,0.45)] flex items-center gap-2 border border-white/20 animate-pulse cursor-pointer"
+                        >
+                          <Play className="w-4 h-4 fill-current" /> XÁC NHẬN & XEM VIDEO CHUYỂN ĐỘNG AR 🚀
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* STATE 3: arProjecting (Playing video with animated drawings) */}
+                  {arProjecting && (
+                    <>
+                      {/* Generated floating sparkles / bubbles */}
+                      <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+                        {Array.from({ length: arSparkleCount }).map((_, i) => (
+                          <motion.div
+                            key={`bubble-${i}`}
+                            initial={{
+                              x: Math.random() * 550,
+                              y: 200,
+                              opacity: Math.random() * 0.7 + 0.3,
+                              scale: Math.random() * 1.2 + 0.4
+                            }}
+                            animate={{
+                              y: -50,
+                              x: Math.random() * 550,
+                              opacity: [0, 0.8, 0]
+                            }}
+                            transition={{
+                              duration: Math.random() * 4 + 3,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                              delay: Math.random() * 3
+                            }}
+                            className={`absolute rounded-full shadow-inner ${
+                              ["whale", "dolphin", "shark"].includes(selectedTemplate)
+                                ? "bg-cyan-300/30 border border-cyan-400/20"
+                                : "bg-amber-300/30 border border-amber-400/20"
+                            }`}
+                            style={{
+                              width: `${Math.random() * 16 + 8}px`,
+                              height: `${Math.random() * 16 + 8}px`,
+                            }}
+                          />
+                        ))}
+                      </div>
+
+                      {/* Active video layout controls/HUD */}
+                      <div className="absolute bottom-12 left-4 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-md text-[10px] font-mono text-emerald-400 flex items-center gap-1.5 z-20">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                        <span>VIDEO PLAYING: {selectedTemplate.toUpperCase()} (MỚI HÓA PHÉP)</span>
+                      </div>
+
+                      <div className="absolute bottom-12 right-4 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-md text-[10px] font-mono text-zinc-300 z-20">
+                        00:08 / 00:10 (Lặp lại vĩnh viễn)
+                      </div>
+
+                      {/* Motion timeline loader animation at the bottom of video screen */}
+                      <div className="absolute bottom-10 left-4 right-4 h-1 bg-zinc-800 rounded-full overflow-hidden z-20">
+                        <div className="h-full bg-indigo-500 animate-[timeline_10s_linear_infinite]" />
+                      </div>
+
+                      <style>
+                        {`
+                          @keyframes timeline {
+                            0% { width: 0%; }
+                            100% { width: 100%; }
+                          }
+                        `}
+                      </style>
+                    </>
+                  )}
+
+                  {/* Animated Floating avatar overlays */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                    {canvasUrl ? (
+                      <motion.img
+                        src={canvasUrl}
+                        key={`${selectedTemplate}-${arMotionSpeed}`}
+                        animate={arProjecting ? {
+                          x: ["whale", "dolphin", "shark"].includes(selectedTemplate) ? [-130, 130, -130] : [-55, 55, -55],
+                          y: [0, -25, 15, -15, 0],
+                          rotate: ["whale", "dolphin", "shark"].includes(selectedTemplate) ? [0, 8, -8, 0] : [0, 4, -4, 0],
+                          scale: [1, 1.15, 0.92, 1.05, 1],
+                        } : {
+                          y: [0, -6, 0],
+                          rotate: [0, 2, -2, 0],
                         }}
                         transition={{
-                          duration: Math.random() * 4 + 3,
                           repeat: Infinity,
+                          duration: arProjecting ? arMotionSpeed : 4,
                           ease: "easeInOut",
-                          delay: Math.random() * 3
                         }}
-                        className={`absolute rounded-full shadow-inner ${
-                          selectedTemplate === "fish"
-                            ? "bg-cyan-300/30 border border-cyan-400/20"
-                            : selectedTemplate === "bird"
-                            ? "bg-yellow-300/25 border border-yellow-400/20"
-                            : "bg-pink-300/30 border border-pink-400/20"
-                        }`}
-                        style={{
-                          width: `${Math.random() * 16 + 8}px`,
-                          height: `${Math.random() * 16 + 8}px`,
-                        }}
+                        className="w-44 h-44 md:w-56 md:h-56 object-contain drop-shadow-[0_0_20px_rgba(253,224,71,0.95)]"
+                        alt="AR avatar overlay"
+                        referrerPolicy="no-referrer"
                       />
-                    ))}
+                    ) : (
+                      <div className="text-white text-xs bg-black/60 px-4 py-2 rounded-xl">
+                        Chưa vẽ tác phẩm nào. Hãy quay lại Tab 1 vẽ trước nhé!
+                      </div>
+                    )}
                   </div>
 
-                  {/* Active video layout controls/HUD */}
-                  <div className="absolute bottom-12 left-4 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-md text-[10px] font-mono text-emerald-400 flex items-center gap-1.5 z-20">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                    <span>VIDEO PLAYING: {selectedTemplate.toUpperCase()} (MỚI HÓA PHÉP)</span>
-                  </div>
+                  {/* Dotted target frame */}
+                  {(!arProjecting && !arScanning) && (
+                    <div className="absolute inset-6 border-2 border-dashed border-indigo-500/30 rounded-3xl pointer-events-none flex flex-col items-center justify-center z-20">
+                      <div className="bg-indigo-600 border border-indigo-500 text-white text-[9px] md:text-sm font-black px-4 py-2 rounded-xl shadow-lg uppercase animate-pulse-slow text-center max-w-sm">
+                        📸 HƯỚNG CAMERA VÀO TRANH VỄ ĐỂ QUÉT
+                      </div>
+                      <p className="text-[10px] text-zinc-400 font-bold mt-2">Bé có thể cầm giấy trước webcam hoặc dùng khung ảnh vẽ bên cạnh</p>
+                    </div>
+                  )}
 
-                  <div className="absolute bottom-12 right-4 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-md text-[10px] font-mono text-zinc-300 z-20">
-                    00:08 / 00:10 (Lặp lại vĩnh viễn)
-                  </div>
-
-                  {/* Motion timeline loader animation at the bottom of video screen */}
-                  <div className="absolute bottom-10 left-4 right-4 h-1 bg-zinc-800 rounded-full overflow-hidden z-20">
-                    <div className="h-full bg-indigo-500 animate-[timeline_10s_linear_infinite]" />
-                  </div>
+                  {/* Scanning visual laser runnings */}
+                  {arScanning && (
+                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-indigo-400 to-transparent shadow-[0_0_8px_rgba(99,102,241,0.8)] pointer-events-none animate-[scan_1.5s_linear_infinite] z-20" />
+                  )}
 
                   <style>
                     {`
-                      @keyframes timeline {
-                        0% { width: 0%; }
-                        100% { width: 100%; }
+                      @keyframes scan {
+                        0% { top: 0%; }
+                        50% { top: 100%; }
+                        100% { top: 0%; }
                       }
                     `}
                   </style>
-                </>
-              )}
 
-              {/* Animated Floating avatar overlays */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                {canvasUrl ? (
-                  <motion.img
-                    src={canvasUrl}
-                    key={`${selectedTemplate}-${arMotionSpeed}`}
-                    animate={arProjecting ? {
-                      x: selectedTemplate === "fish" ? [-105, 105, -105] : [-45, 45, -45],
-                      y: [0, -25, 15, -15, 0],
-                      rotate: selectedTemplate === "fish" ? [0, 8, -8, 0] : [0, 4, -4, 0],
-                      scale: [1, 1.15, 0.92, 1.05, 1],
-                    } : {
-                      y: [0, -6, 0],
-                      rotate: [0, 2, -2, 0],
-                    }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: arProjecting ? arMotionSpeed : 4,
-                      ease: "easeInOut",
-                    }}
-                    className="w-44 h-44 md:w-56 md:h-56 object-contain drop-shadow-[0_0_20px_rgba(253,224,71,0.95)]"
-                    alt="AR avatar overlay"
-                    referrerPolicy="no-referrer"
-                  />
-                ) : (
-                  <div className="text-white text-xs bg-black/60 px-4 py-2 rounded-xl">
-                    Chưa vẽ tác phẩm nào. Hãy quay lại Tab 1 vẽ trước nhé!
+                  {/* Live status badge tags */}
+                  <div className="absolute top-3 left-3 bg-indigo-600 border border-indigo-500 text-white font-extrabold text-[10px] px-2.5 py-1 rounded-full animate-pulse flex items-center gap-1.5 z-20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white block animate-ping" />
+                    <span>
+                      {arProjecting ? "TRẠNG THÁI: VIDEO ĐANG CHIẾU 🎬" : arScanning ? "TRẠNG THÁI: ĐANG QUÉT SIÊU TỐC ⚡" : "TRẠNG THÁI: CHỜ QUÉT CAMERA"}
+                    </span>
                   </div>
+
+                  {/* Music mute toggler */}
+                  <div className="absolute bottom-3 right-3 z-30 animate-pulse-slow">
+                    <button
+                      id="music-ar-btn"
+                      onClick={startBackgroundScenerySound}
+                      className="bg-zinc-900/90 hover:bg-zinc-800 text-zinc-100 text-xs p-2.5 border border-zinc-850 rounded-xl transition flex items-center gap-1.5"
+                    >
+                      {isARMusicOn ? <Volume2 className="text-indigo-400" /> : <VolumeX />}
+                      <span className="hidden sm:inline font-extrabold">Âm sinh cảnh 🎵</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Custom Interactive Speed & Filters Settings Bar for Projecting State */}
+                {arProjecting && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 grid grid-cols-2 gap-4"
+                  >
+                    <div>
+                      <label className="block text-[10px] text-zinc-400 font-bold uppercase mb-1.5">🌈 Bộ lọc màu sắc video:</label>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          { id: "none", name: "Gốc" },
+                          { id: "ocean", name: "Đại Dương 🐬" },
+                          { id: "sunset", name: "Hoàng Hôn 🌅" },
+                          { id: "neon", name: "Kỳ Ảo 🌸" }
+                        ].map((filt) => (
+                          <button
+                            key={filt.id}
+                            onClick={() => {
+                              playWebSynth("click");
+                              setArActiveFilter(filt.id);
+                            }}
+                            className={`text-[10px] px-2.5 py-1.5 rounded-lg border font-black transition ${
+                              arActiveFilter === filt.id
+                                ? "bg-indigo-600 border-indigo-500 text-white shadow-md"
+                                : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                            }`}
+                          >
+                            {filt.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-zinc-400 font-bold uppercase mb-1.5">⚡ Tốc độ bơi / bay:</label>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          { id: 6, name: "Thong thả" },
+                          { id: 3, name: "Vừa phải" },
+                          { id: 1.5, name: "Chạy nhanh ⚡" }
+                        ].map((sp) => (
+                          <button
+                            key={sp.id}
+                            onClick={() => {
+                              playWebSynth("click");
+                              setArMotionSpeed(sp.id);
+                            }}
+                            className={`text-[10px] px-2.5 py-1.5 rounded-lg border font-black transition ${
+                              arMotionSpeed === sp.id
+                                ? "bg-purple-600 border-purple-500 text-white shadow-md"
+                                : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                            }`}
+                          >
+                            {sp.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
                 )}
               </div>
 
-              {/* Dotted target frame */}
-              {(!arProjecting && !arScanning) && (
-                <div className="absolute inset-6 border-2 border-dashed border-indigo-500/30 rounded-3xl pointer-events-none flex flex-col items-center justify-center z-20">
-                  <div className="bg-indigo-600 border border-indigo-500 text-white text-[9px] md:text-sm font-black px-4 py-2 rounded-xl shadow-lg uppercase animate-pulse-slow text-center max-w-sm">
-                    📸 HƯỚNG CAMERA VÀO TRANH VẼ ĐỂ QUÉT
+              {/* Right Column: Scenery Customizer and Control Actions Block */}
+              <div className="lg:col-span-5 space-y-5">
+                {/* Background Ocean Scenery Customizer */}
+                <div id="scenery-customizer-panel" className="bg-zinc-950/60 p-5 rounded-2xl border border-zinc-805">
+                  <label className="block text-xs text-indigo-400 font-extrabold uppercase mb-3 text-center flex items-center justify-center gap-1.5">
+                    🌊 CHỌN CẢNH NỀN ĐẠI DƯƠNG PHÙ HỢP:
+                  </label>
+                  <div className="grid grid-cols-1 gap-2.5">
+                    {oceanScenes.map((scene) => {
+                      const isRecommended = recommendedScenes[selectedTemplate] === scene.id;
+                      return (
+                        <button
+                          key={scene.id}
+                          id={`btn-scene-${scene.id}`}
+                          onClick={() => {
+                            playWebSynth("click");
+                            setSelectedOceanScene(scene.id);
+                            speakPedagogicalText(`Tuyệt vời! Bé đã chọn cảnh nền ${scene.name}. Hãy quét tranh nhé!`);
+                          }}
+                          className={`relative px-4 py-3 rounded-xl border text-xs font-black transition flex items-center justify-between gap-3 text-left ${
+                            selectedOceanScene === scene.id
+                              ? "bg-indigo-600 shadow-lg border-indigo-500 text-white active:scale-95"
+                              : "bg-zinc-900/80 border-zinc-800 text-zinc-300 hover:text-zinc-100 hover:border-zinc-700 active:scale-98"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <span className="text-xl">{scene.emoji}</span>
+                            <span className="leading-tight text-[11px] font-bold">{scene.name}</span>
+                          </div>
+                          {isRecommended && (
+                            <span className="text-[8px] bg-amber-500 text-zinc-950 px-2 py-0.5 rounded-full font-bold shadow animate-pulse">
+                              Gợi ý ⭐
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
-                  <p className="text-[10px] text-zinc-400 font-bold mt-2">Bé có thể cầm giấy trước webcam hoặc dùng khung ảnh vẽ bên cạnh</p>
+                  <p className="text-[10px] text-zinc-450 text-center font-bold mt-3 border-t border-zinc-800/80 pt-2">
+                    💡 {oceanScenes.find((s) => s.id === selectedOceanScene)?.description}
+                  </p>
                 </div>
-              )}
 
-              {/* Scanning visual laser runnings */}
-              {arScanning && (
-                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-indigo-400 to-transparent shadow-[0_0_8px_rgba(99,102,241,0.8)] pointer-events-none animate-[scan_1.5s_linear_infinite] z-20" />
-              )}
+                {/* Control Actions Frame */}
+                <div className="bg-zinc-950/40 p-5 rounded-2xl border border-zinc-800/60 space-y-3">
+                  <span className="block text-[10.5px] text-zinc-400 font-black uppercase text-center tracking-wider mb-2">Bảng điều hướng thông minh:</span>
+                  
+                  {/* Start scan / scanning trigger */}
+                  <button
+                    id="btn-fast-scan-ar-again"
+                    onClick={() => {
+                      playWebSynth("magic");
+                      startArScanningSequence();
+                      speakPedagogicalText("Bắt đầu quét lại tranh vẽ chớp nhoáng nhé!");
+                    }}
+                    className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-505 text-white font-black text-xs py-3.5 px-4 rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.25)] transition flex items-center justify-center gap-2 border border-violet-500 active:scale-95 cursor-pointer text-center"
+                  >
+                    <span>🔄 BẮT ĐẦU QUÉT TRANH VẼ CỦA BÉ</span>
+                  </button>
 
-              <style>
-                {`
-                  @keyframes scan {
-                    0% { top: 0%; }
-                    50% { top: 100%; }
-                    100% { top: 0%; }
-                  }
-                `}
-              </style>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button
+                      id="btn-trigger-hardware-cam"
+                      onClick={toggleRealCamera}
+                      className="bg-zinc-900 border border-zinc-800 text-zinc-200 font-extrabold text-[11px] py-3 rounded-xl transition flex items-center justify-center gap-1.5 active:scale-95"
+                    >
+                      {isRealCameraOn ? <VideoOff className="w-3.5 h-3.5 text-rose-450" /> : <Video className="w-3.5 h-3.5 text-emerald-405" />}
+                      <span>{isRealCameraOn ? "Tắt Camera Thật" : "Dùng Camera Thật 📸"}</span>
+                    </button>
 
-              {/* Live status badge tags */}
-              <div className="absolute top-3 left-3 bg-indigo-600 border border-indigo-500 text-white font-extrabold text-[10px] px-2.5 py-1 rounded-full animate-pulse flex items-center gap-1.5 z-20">
-                <span className="w-1.5 h-1.5 rounded-full bg-white block animate-ping" />
-                <span>
-                  {arProjecting ? "TRẠNG THÁI: VIDEO ĐANG CHIẾU 🎬" : arScanning ? "TRẠNG THÁI: ĐANG QUÉT SIÊU TỐC ⚡" : "TRẠNG THÁI: CHỜ QUÉT CAMERA"}
-                </span>
+                    <button
+                      id="btn-save-to-collection"
+                      onClick={saveArtworkToGallery}
+                      className="bg-zinc-900 border border-zinc-800 text-zinc-200 font-extrabold text-[11px] py-3 rounded-xl transition flex items-center justify-center gap-1.5 active:scale-95"
+                    >
+                      💾 Lưu Tranh 3D
+                    </button>
+                  </div>
+                </div>
               </div>
-
-              {/* Music mute toggler */}
-              <div className="absolute bottom-3 right-3 z-30 animate-pulse-slow">
-                <button
-                  id="music-ar-btn"
-                  onClick={startBackgroundScenerySound}
-                  className="bg-zinc-900/90 hover:bg-zinc-800 text-zinc-100 text-xs p-2.5 border border-zinc-850 rounded-xl transition flex items-center gap-1.5"
-                >
-                  {isARMusicOn ? <Volume2 className="text-indigo-400" /> : <VolumeX />}
-                  <span className="hidden sm:inline font-extrabold">Âm sinh cảnh 🎵</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Custom Interactive Speed & Filters Settings Bar for Projecting State */}
-            {arProjecting && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4 max-w-2xl mx-auto bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 grid grid-cols-2 gap-4"
-              >
-                <div>
-                  <label className="block text-[10px] text-zinc-400 font-bold uppercase mb-1.5">🌈 Bộ lọc màu sắc video:</label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {[
-                      { id: "none", name: "Gốc" },
-                      { id: "ocean", name: "Đại Dương 🐬" },
-                      { id: "sunset", name: "Hoàng Hôn 🌅" },
-                      { id: "neon", name: "Kỳ Ảo 🌸" }
-                    ].map((filt) => (
-                      <button
-                        key={filt.id}
-                        onClick={() => {
-                          playWebSynth("click");
-                          setArActiveFilter(filt.id);
-                        }}
-                        className={`text-[10px] px-2.5 py-1.5 rounded-lg border font-black transition ${
-                          arActiveFilter === filt.id
-                            ? "bg-indigo-600 border-indigo-500 text-white shadow-md"
-                            : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
-                        }`}
-                      >
-                        {filt.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] text-zinc-400 font-bold uppercase mb-1.5">⚡ Tốc độ bơi / bay:</label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {[
-                      { id: 6, name: "Thong thả" },
-                      { id: 3, name: "Vừa phải" },
-                      { id: 1.5, name: "Chạy nhanh ⚡" }
-                    ].map((sp) => (
-                      <button
-                        key={sp.id}
-                        onClick={() => {
-                          playWebSynth("click");
-                          setArMotionSpeed(sp.id);
-                        }}
-                        className={`text-[10px] px-2.5 py-1.5 rounded-lg border font-black transition ${
-                          arMotionSpeed === sp.id
-                            ? "bg-purple-600 border-purple-500 text-white shadow-md"
-                            : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
-                        }`}
-                      >
-                        {sp.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Actions Panel */}
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <button
-                id="btn-trigger-hardware-cam"
-                onClick={toggleRealCamera}
-                className="bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-extrabold text-xs px-5 py-3 rounded-2xl shadow-md transition flex items-center gap-2 border border-zinc-700 active:scale-95"
-              >
-                {isRealCameraOn ? <VideoOff className="w-4 h-4 text-rose-450" /> : <Video className="w-4 h-4 text-emerald-405" />}
-                <span>{isRealCameraOn ? "Tắt Camera Thật" : "Sử dụng Camera Thật 📸"}</span>
-              </button>
-
-              <button
-                id="btn-fast-scan-ar-again"
-                onClick={() => {
-                  playWebSynth("magic");
-                  startArScanningSequence();
-                  speakPedagogicalText("Bắt đầu quét lại tranh vẽ chớp nhoáng nhé!");
-                }}
-                className="bg-zinc-800 hover:bg-zinc-750 text-zinc-200 font-extrabold text-xs px-5 py-3 rounded-2xl shadow-md transition flex items-center gap-2 border border-zinc-700 active:scale-95 cursor-pointer"
-              >
-                <span>🔄 Bắt đầu quét lại tranh</span>
-              </button>
-
-              <button
-                id="btn-save-to-collection"
-                onClick={saveArtworkToGallery}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs px-5 py-3 rounded-2xl shadow-md transition flex items-center gap-2 border border-indigo-500 active:scale-95"
-              >
-                💾 Lưu Vào Phòng Triển Lãm 3D
-              </button>
-
-              <button
-                id="btn-mascot-say-hello"
-                onClick={() => {
-                  playWebSynth("success");
-                  const voices: any = {
-                    whale: "Bạn nhỏ vẽ bạn cá voi xanh đại dương uy nghi và khoáng đạt vô cùng!",
-                    dolphin: "Bạn nhỏ vẽ bạn cá heo thông minh lướt sóng cực kì ngoạn mục!",
-                    goldfish: "Bạn nhỏ vẽ bạn cá vàng óng ánh lung linh, đáng yêu làm sao!",
-                    shark: "Bạn nhỏ vẽ bạn cá mập dũng mãnh, oai hùng vượt qua muôn ngàn trùng khơi!",
-                    turtle: "Bạn nhỏ vẽ bạn rùa biển cần mẫn, chăm chỉ mang chiếc mai rực rỡ sắc màu!",
-                    octopus: "Bạn nhỏ vẽ bạn bạch tuộc tinh nghịch với những xúc tu thông thái diệu kì!",
-                  };
-                  const currentVoice = voices[selectedTemplate] || "Bạn là họa sĩ nhỏ tinh nghịch của tôi!";
-                  speakPedagogicalText(currentVoice);
-                }}
-                className="bg-zinc-800 hover:bg-zinc-750 text-zinc-350 font-extrabold text-xs px-5 py-3 rounded-2xl shadow-md transition flex items-center gap-2 border border-zinc-700 active:scale-95"
-              >
-                <Smile className="w-4 h-4" /> Nhân vật chào bé
-              </button>
             </div>
           </div>
         )}
@@ -1745,33 +1816,33 @@ export default function App() {
                 </p>
 
                 {shadowTarget === "whale" && (
-                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-black mx-auto bg-white border border-zinc-200 p-4 rounded-3xl shadow-sm cursor-pointer hover:scale-105 transition-all">
-                    <path d="M15 55 Q25 40 75 50 L90 38 L88 52 L90 66 L75 55 Z" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                  <svg viewBox="0 0 100 100" className="w-48 h-48 md:w-56 md:h-56 text-black mx-auto bg-white border-4 border-indigo-400 p-4 rounded-3xl shadow-2xl cursor-pointer hover:scale-105 transition-all">
+                    <path d="M15 55 Q25 40 75 50 L90 38 L88 52 L90 66 L75 55 Z" stroke="currentColor" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                   </svg>
                 )}
                 {shadowTarget === "dolphin" && (
-                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-black mx-auto bg-white border border-zinc-200 p-4 rounded-3xl shadow-sm cursor-pointer hover:scale-105 transition-all">
-                    <path d="M12 60 Q28 18 82 50 L92 58 L84 52 L90 44 Z" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                  <svg viewBox="0 0 100 100" className="w-48 h-48 md:w-56 md:h-56 text-black mx-auto bg-white border-4 border-indigo-400 p-4 rounded-3xl shadow-2xl cursor-pointer hover:scale-105 transition-all">
+                    <path d="M12 60 Q28 18 82 50 L92 58 L84 52 L90 44 Z" stroke="currentColor" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                   </svg>
                 )}
                 {shadowTarget === "goldfish" && (
-                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-black mx-auto bg-white border border-zinc-200 p-4 rounded-3xl shadow-sm cursor-pointer hover:scale-105 transition-all">
-                    <path d="M18 50 Q42 16 68 50 Q42 84 18 50 Z M68 50 Q86 22 88 50 Z" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                  <svg viewBox="0 0 100 100" className="w-48 h-48 md:w-56 md:h-56 text-black mx-auto bg-white border-4 border-indigo-400 p-4 rounded-3xl shadow-2xl cursor-pointer hover:scale-105 transition-all">
+                    <path d="M18 50 Q42 16 68 50 Q42 84 18 50 Z M68 50 Q86 22 88 50 Z" stroke="currentColor" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                   </svg>
                 )}
                 {shadowTarget === "shark" && (
-                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-black mx-auto bg-white border border-zinc-200 p-4 rounded-3xl shadow-sm cursor-pointer hover:scale-105 transition-all">
-                    <path d="M14 52 Q40 22 74 46 L86 26 L80 48 L86 70 L72 54 Z" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                  <svg viewBox="0 0 100 100" className="w-48 h-48 md:w-56 md:h-56 text-black mx-auto bg-white border-4 border-indigo-400 p-4 rounded-3xl shadow-2xl cursor-pointer hover:scale-105 transition-all">
+                    <path d="M14 52 Q40 22 74 46 L86 26 L80 48 L86 70 L72 54 Z" stroke="currentColor" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                   </svg>
                 )}
                 {shadowTarget === "turtle" && (
-                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-black mx-auto bg-white border border-zinc-200 p-4 rounded-3xl shadow-sm cursor-pointer hover:scale-105 transition-all">
-                    <path d="M26 50 Q50 18 74 50 Z M26 45 Q10 38 12 56 M32 50 Q22 84 36 78 Q40 58 44 50" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                  <svg viewBox="0 0 100 100" className="w-48 h-48 md:w-56 md:h-56 text-black mx-auto bg-white border-4 border-indigo-400 p-4 rounded-3xl shadow-2xl cursor-pointer hover:scale-105 transition-all">
+                    <path d="M26 50 Q50 18 74 50 Z M26 45 Q10 38 12 56 M32 50 Q22 84 36 78 Q40 58 44 50" stroke="currentColor" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                   </svg>
                 )}
                 {shadowTarget === "octopus" && (
-                  <svg viewBox="0 0 100 100" className="w-32 h-32 text-black mx-auto bg-white border border-zinc-200 p-4 rounded-3xl shadow-sm cursor-pointer hover:scale-105 transition-all">
-                    <path d="M35 50 A30 30 0 1 1 65 50 Z M35 49 Q20 70 34 85 M46 51 Q44 72 47 89" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                  <svg viewBox="0 0 100 100" className="w-48 h-48 md:w-56 md:h-56 text-black mx-auto bg-white border-4 border-indigo-400 p-4 rounded-3xl shadow-2xl cursor-pointer hover:scale-105 transition-all">
+                    <path d="M35 50 A30 30 0 1 1 65 50 Z M35 49 Q20 70 34 85 M46 51 Q44 72 47 89" stroke="currentColor" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                   </svg>
                 )}
 

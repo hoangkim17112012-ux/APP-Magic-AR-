@@ -1,0 +1,6 @@
+{
+  "name": "Magic Art Việt Nam",
+  "description": "Ứng dụng mĩ thuật sống động AR tương tác 3D kết hợp trí tuệ nhân tạo AI nhận xét dành cho học sinh tiểu học",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
